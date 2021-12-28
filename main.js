@@ -9,7 +9,7 @@ const router = require('./routes/index');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-app.get('/', (req, res, next) => {
+app.get('*', (req, res, next) => {
 
    next()
 })

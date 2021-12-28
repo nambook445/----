@@ -38,14 +38,17 @@ module.exports = {
         </body>
         </html>`
     },
-    page:function (param) {
-        `<!DOCTYPE html>
+    page:function () {
+        return`<!DOCTYPE html>
         <html lang="ko">
             <head>
                 <meta charset="UTF-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="../public/style.css">
+                <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
                 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
                 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
         
@@ -60,7 +63,7 @@ module.exports = {
                 <nav>
                     <ul>
                         <li><a href="/">홈</a></li>
-                        <li><a href="/">글쓰기</a></li>
+                        <li><a href="/create">글쓰기</a></li>
                         <li><a href="/">관리</a></li>
                     </ul>
                 </nav>
@@ -69,22 +72,21 @@ module.exports = {
                         <form method="post" action="/create_process">
                             <input type="text" name="title" placeholder="title">
                             <textarea id="summernote" name="editordata"></textarea>
-                        
                             <script>
                                 $(document).ready(function() {
                                     $('#summernote').summernote({
-                                        placeholder: 'Hello stand alone ui',
-                                        tabsize: 2,
-                                        height: 120,
-                                        toolbar: [
-                                        ['style', ['style']],
-                                        ['font', ['bold', 'underline', 'clear']],
-                                        ['color', ['color']],
-                                        ['para', ['ul', 'ol', 'paragraph']],
-                                        ['table', ['table']],
-                                        ['insert', ['link', 'picture', 'video']],
-                                        ['view', ['fullscreen', 'codeview', 'help']]
-                                        ]
+                                        // placeholder: 'Hello stand alone ui',
+                                        // tabsize: 2,
+                                        // height: 120,
+                                        // toolbar: [
+                                        // ['style', ['style']],
+                                        // ['font', ['bold', 'underline', 'clear']],
+                                        // ['color', ['color']],
+                                        // ['para', ['ul', 'ol', 'paragraph']],
+                                        // ['table', ['table']],
+                                        // ['insert', ['link', 'picture', 'video']],
+                                        // ['view', ['fullscreen', 'codeview', 'help']]
+                                        // ]
                                     })
                                 });
                             </script>

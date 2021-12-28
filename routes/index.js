@@ -4,12 +4,19 @@ var template = require('../template/index.js');
  
 router.get('/', function(req, res) { 
     var title = '마감일기';
-    var description = 'Hello, Node.js';
     var list = ''
-    var html = template.index(title, list,
+    var index = template.index(title, list,
       '',
     ); 
-    res.send(html);
+    res.send(index);
   });
+  router.get('/create', function (req, res) {
+    var page = template.page()
+    res.send(page);
+  })
+  router.get('/create_process', function (req, res) {
+    var page = template.page()
+    res.send(page);
+  })
    
   module.exports = router;

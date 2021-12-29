@@ -7,18 +7,16 @@ var db = require('../model/db');
 router.get('/', function(req, res) { 
     db.query(`SELECT * FROM topic`, function (err, topics) {
         var title = '마감일기';
-        var list = topics;
-        var index = template.index(title, list,
+        var index = template.index(title, '',
           '',
         ); 
-        console.log(list);
         res.send(index);
       })
   });
-  router.get('/create', function (req, res) {
-    var page = template.page()
-    res.send(page);
-  })
+router.get('/create', function (req, res) {
+var page = template.page()
+res.send(page);
+})
   router.post('/create_process', function (req, res) {
       var post = req.body
     db.query(`

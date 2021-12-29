@@ -6,8 +6,8 @@ var indexRouter = require('./routes/index');
 const router = require('./routes/index');
 // var topicRouter = require('./routes/topic');
 
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('*', (req, res, next) => {
 

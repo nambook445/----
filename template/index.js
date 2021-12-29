@@ -37,7 +37,7 @@ module.exports = {
         </body>
         </html>`
     },
-    page:function () {
+    page:function (title, description, created, author_id) {
         return`<!DOCTYPE html>
         <html lang="ko">
             <head>
@@ -45,11 +45,6 @@ module.exports = {
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="../public/style.css">
-                <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
-                <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-                <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-                <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-                <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
         
                 <title>글쓰기</title>
             </head>
@@ -69,26 +64,8 @@ module.exports = {
                 <main>
                     <article>
                         <form method="post" action="/create_process">
-                            <input type="text" name="title" placeholder="title">
-                            <textarea id="summernote" name="editordata"></textarea>
-                            <script>
-                                $(document).ready(function() {
-                                    $('#summernote').summernote({
-                                        // placeholder: 'Hello stand alone ui',
-                                        // tabsize: 2,
-                                        // height: 120,
-                                        // toolbar: [
-                                        // ['style', ['style']],
-                                        // ['font', ['bold', 'underline', 'clear']],
-                                        // ['color', ['color']],
-                                        // ['para', ['ul', 'ol', 'paragraph']],
-                                        // ['table', ['table']],
-                                        // ['insert', ['link', 'picture', 'video']],
-                                        // ['view', ['fullscreen', 'codeview', 'help']]
-                                        // ]
-                                    })
-                                });
-                            </script>
+                            <input type="text" name="title" placeholder="title" value="${title}">
+                            <textarea name="description">${description}</textarea>                            
                             <p><input type="submit" value="마감"></p>
                         </form>           
                     </article>

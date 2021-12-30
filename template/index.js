@@ -11,6 +11,9 @@ module.exports = {
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script src="lang/summernote-ko-KR.js"></script>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
             <link rel="stylesheet" href="css/style.css">
             <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
             <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
@@ -18,18 +21,20 @@ module.exports = {
             <title>${title}</title>
         </head>
         <body>
-            <header>
-                <img src="" alt="로고">
-                <h1>${title}</h1>
-                <a href="/login_process">로그인</a>
-            </header>
-            <nav>
-                <ul>
-                    <li><a href="/">홈</a></li>
-                    <li><a href="/create">글쓰기</a></li>
-                    <li><a href="/board">관리</a></li>
-                </ul>
-            </nav>
+            <div class="intro_bg">
+                <header>    
+                    <img src="" alt="로고">
+                    <h1>${title}</h1>
+                    <a href="/login_process">로그인</a>
+                </header>
+                    <nav>
+                        <ul class="nav">
+                            <li><a href="/">홈</a></li>
+                            <li><a href="/create">글쓰기</a></li>
+                            <li><a href="/board">관리</a></li>
+                        </ul>
+                    </nav>
+            </div>
             <main>
                 <article>
                     ${list}
@@ -103,14 +108,14 @@ module.exports = {
                     <img href="/" src="" alt="로고">
                     <h1>마감일기</h1>
                     <a href="/login_process">로그인</a>
+                    <nav>
+                        <ul>
+                            <li><a href="/">홈</a></li>
+                            <li><a href="/create">글쓰기</a></li>
+                            <li><a href="/">관리</a></li>
+                        </ul>
+                    </nav>
                 </header>
-                <nav>
-                    <ul>
-                        <li><a href="/">홈</a></li>
-                        <li><a href="/create">글쓰기</a></li>
-                        <li><a href="/">관리</a></li>
-                    </ul>
-                </nav>
                 <main>
                     <article>
                         <form method="post" action="/create_process">

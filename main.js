@@ -22,8 +22,8 @@ app.get('/', (req, res,) => {
 app.get('/create', function (req, res) {
     var title = '글쓰기';
     var html = template.HTML(title, '',`
-        <form method="post" action="/create_process">
-            <input type="text" name="title" placeholder="title">
+        <form class="form" method="post" action="/create_process">
+            <input class="title" type="text" name="title" placeholder="title">
             <textarea id="summernote" name="description"></textarea>
             <script>
                 $(document).ready(function() {
@@ -56,8 +56,8 @@ app.get('/page/:pageId', function (req, res) {
             var title = results[0].title;
             var description = results[0].description;
             var html = template.HTML(title, '', `
-            <form method="post" action="/create_process">
-                <input type="text" name="title" placeholder="title" value="${title}">
+            <form class="form" method="post" action="/create_process">
+                <input class="title" type="text" name="title" placeholder="title" value="${title}">
                 <textarea id="summernote" name="description">${description}</textarea>
                 <script>
                     $(document).ready(function() {
@@ -88,9 +88,9 @@ app.get('/update/:updateId', function (req, res) {
         var title = results[0].title;
         var description = results[0].description;
         var html = template.HTML(title, '', `
-        <form method="post" action="/update_process">
+        <form class="form" method="post" action="/update_process">
             <input type="hidden" name="id" value="${results[0].id}"> 
-            <input type="text" name="title" placeholder="title" value="${title}">
+            <input class="title" type="text" name="title" placeholder="title" value="${title}">
             <textarea id="summernote" name="description">${description}</textarea>
             <script>
                 $(document).ready(function() {

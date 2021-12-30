@@ -58,12 +58,20 @@ module.exports = {
         var tag = '<table>';
         var i = 0;
         while(i < results.length){
-        tag += `<tr>
-        <td>${results[i].id}</td>
-        <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
-        <td>${results[i].created}</a></td>
-        <td>${results[i].author_id}</td>
-        </tr>
+        tag += `
+        <tr>
+            <td>${results[i].id}</td>
+            <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
+            <td>${results[i].created}</a></td>
+            <td>${results[i].author_id}</td>
+            <td><a href="/update/${results[i].id}">update</a></td>
+            <td>
+                <form method="post" action="delete_process">
+                    <input type="hidden" name="id" value="${results[i].id}">
+                    <input type="submit" name="${results[i].id}" value="delete">
+                </form>    
+            </td>
+            </tr>
         `;
         i++;
     }   

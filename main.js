@@ -44,7 +44,7 @@ app.post('/create_process', function (req, res,) {
             VALUES(?, ?, NOW(), ?)`,
             [post.title, post.description, 1], 
             function(err, results){     
-            res.redirect(`/page/${results.insertId}`);
+            res.redirect(`/board`);
     });
 })
 
@@ -119,7 +119,7 @@ app.post('/update_process', function (req, res,) {
         if(err){
             throw err;
         }     
-        res.redirect(`/page/${post.id}`);
+        res.redirect(`/board`);
     });
 });
 app.post('/delete_process', function (req, res) {
@@ -128,7 +128,7 @@ app.post('/delete_process', function (req, res) {
         if(err){
             throw err;
         }
-        res.redirect('/')
+        res.redirect('/board')
     })
 })
 app.get('/board', (req, res,) => {

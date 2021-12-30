@@ -14,11 +14,11 @@ app.use(express.static('public'));
 app.get('/', (req, res,) => {
     db.query(`SELECT * FROM topic`, function (err, results) {
         var title = '마감일기';
-        var list = template.LIST(results);
-        var html = template.HTML(title, list, '',''); 
+        var html = template.HTML(title, '', '', ''); 
         res.send(html);
       })
 })
+
 app.get('/create', function (req, res) {
     var title = '글쓰기';
     var html = template.HTML(title, '',`
@@ -36,7 +36,7 @@ app.get('/create', function (req, res) {
         </form>
     `,''); 
     res.send(html);
-});
+})
 
 app.post('/create_process', function (req, res,) {
     var post = req.body;
@@ -46,7 +46,8 @@ app.post('/create_process', function (req, res,) {
             function(err, results){     
             res.redirect(`/page/${results.insertId}`);
     });
-});
+})
+
 app.get('/page/:pageId', function (req, res) {
         db.query(`SELECT * FROM topic WHERE id=?`,[req.params.pageId],function (err, results) {
             if(err){
@@ -112,7 +113,6 @@ app.get('/update/:updateId', function (req, res) {
     });
 });
 
-// 'UPDATE topic SET title=?, description=?, author_id=1 WHERE id=?', [post.title, post.description, post.id],
 app.post('/update_process', function (req, res,) {
     var post = req.body;
     db.query('UPDATE topic SET title=?, description=?, author_id=1 WHERE id=?', [post.title, post.description, post.id],function(err, results){
@@ -129,8 +129,16 @@ app.post('/delete_process', function (req, res) {
             throw err;
         }
         res.redirect('/')
-      })
-  })
+    })
+})
+app.get('/board', (req, res,) => {
+db.query(`SELECT * FROM topic`, function (err, results) {
+    var title = '글목록';
+    var table = template.TABLE(results);
+    var html = template.HTML(title, '', table,''); 
+    res.send(html);
+    })
+})
 
 
 

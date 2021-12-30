@@ -54,8 +54,24 @@ module.exports = {
         }   
     list = list+'</ul>';
     return list;      
-    },
-    
+    },TABLE:function (results) {
+        var tag = '<table>';
+        var i = 0;
+        while(i < results.length){
+        tag += `<tr>
+        <td>${results[i].id}</td>
+        <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
+        <td>${results[i].created}</a></td>
+        <td>${results[i].author_id}</td>
+        </tr>
+        `;
+        i++;
+    }   
+    tag += '</table>';
+    return tag;     
+}
+,
+
     page:function () {
         return`<!DOCTYPE html>
         <html lang="en">

@@ -5,11 +5,21 @@ var mysql      = require('mysql');
 var db = require('./model/db');;
 var template = require('./template/index.js');
 // var indexRouter = require('./routes/index');
-// // var pageRouter = require('./routes/page');
+// // var pagesRouter = require('./routes/pages');
 var bodyParser = require('body-parser');
+var methodOverride = require('method-override')
 const { pageResults } = require('./template/index.js');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(methodOverride(function (req, res) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+      // look in urlencoded POST bodies and delete it
+      var method = req.body._method
+      delete req.body._method
+      return method
+    }
+}))
 
 app.get('/', (req, res,) => {
     db.query(`SELECT * FROM topic`, function (err, results) {
@@ -70,11 +80,18 @@ app.get('/page/:pageId', function (req, res) {
             </form>
         `,` <a href="/update/${req.params.pageId}">update</a>
         <p>
-        <form method="post" action="/delete_process">
-                <input type="hidden" name="id" value="${req.params.pageId}">
-                <input type="submit" value="delete">
+        <form method="POST" action="/delete_process" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="id" value="${req.params.pageId}">
+        <input type="submit" value="delete">
         </form>
-        </p>`); 
+        </p>
+        <form method="POST" action="/resource" enctype="application/x-www-form-urlencoded">
+  <input type="hidden" name="_method" value="DELETE">
+  <button type="submit">Delete resource</button>
+</form>
+        
+        `); 
             res.send(html);
         
     });
@@ -104,6 +121,7 @@ app.get('/update/:updateId', function (req, res) {
         `,`
         <p>
         <form method="post" action="/delete_process">
+        <input type="hidden" name="delete" value="delete">
                 <input type="hidden" name="id" value="${results[0].id}">
                 <input type="submit" value="delete">
         </form>
@@ -113,7 +131,7 @@ app.get('/update/:updateId', function (req, res) {
     });
 });
 
-app.post('/update_process', function (req, res,) {
+app.put('/update_process', function (req, res,) {
     var post = req.body;
     db.query('UPDATE topic SET title=?, description=?, author_id=1 WHERE id=?', [post.title, post.description, post.id],function(err, results){
         if(err){
@@ -122,7 +140,7 @@ app.post('/update_process', function (req, res,) {
         res.redirect(`/board`);
     });
 });
-app.post('/delete_process', function (req, res) {
+app.delete('/delete_process', function (req, res) {
     var post = req.body;
     db.query(`DELETE FROM topic WHERE id = ?`, [post.id], function (err, results) {
         if(err){
@@ -143,7 +161,7 @@ db.query(`SELECT * FROM topic`, function (err, results) {
 
 
 // app.use('/', indexRouter);
-// app.use('/create_process', pageRouter);
+// app.use('/create_process', pagesRouter);
 
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');

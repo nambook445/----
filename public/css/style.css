@@ -1,4 +1,4 @@
-*{
+/* *{
     margin: 0;
     text-decoration: none;
     list-style: none;
@@ -16,7 +16,7 @@
 }
 header{
     display: flex;
-    /* background-color: blueviolet; */
+    background-color: blueviolet;
     width: 1280px;
     margin: auto;
     font-size:larger;
@@ -24,7 +24,7 @@ header{
 }
 
 .nav{
-    /* background-color: brown; */
+    background-color: brown;
     display: flex;
     justify-content: flex-end;
 }
@@ -33,7 +33,7 @@ header{
     
 }
 article{
-    /* background-color: royalblue; */
+    background-color: royalblue;
     background-image: url("../image/article_bg.png");
 }
 .form{
@@ -48,7 +48,7 @@ article{
     
 }
 table{
-    border:  5px,solid, black;
+    border: solid, black;
     font-size: medium;
 }
 
@@ -57,4 +57,4 @@ aside{
 }
 footer{
     background-color: chocolate;
-}
+} */

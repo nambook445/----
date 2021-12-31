@@ -12,15 +12,11 @@ const { pageResults } = require('./template/index.js');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
-app.use(methodOverride(function (req, res) {
-    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-      // look in urlencoded POST bodies and delete it
-      var method = req.body._method
-      delete req.body._method
-      return method
-    }
-}))
+app.use(methodOverride("_method", {
 
+    methods: ["POST", "GET", "PUT", 'DELETE']
+  
+}))
 app.get('/', (req, res,) => {
     db.query(`SELECT * FROM topic`, function (err, results) {
         var title = '마감일기';
@@ -80,8 +76,8 @@ app.get('/page/:pageId', function (req, res) {
             </form>
         `,` <a href="/update/${req.params.pageId}">update</a>
         <p>
-        <form method="POST" action="/delete_process" enctype="application/x-www-form-urlencoded">
-        <input type="hidden" name="_method" value="DELETE">
+        <form method="POST" action="/delete_process?_method="DELETE"">
+       <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="id" value="${req.params.pageId}">
         <input type="submit" value="delete">
         </form>

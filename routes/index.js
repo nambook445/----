@@ -7,7 +7,7 @@ router.get('/', (req, res,) => {
   db.query(`SELECT * FROM topic`, function (err, results) {
       var title = '마감일기';
       var html = template.HTML(title, '', '', ''); 
-      res.send(html);
+      res.send(200,html);
     })
 })
 
@@ -27,7 +27,7 @@ router.get('/create', function (req, res) {
           <p><input type="submit" value="마감"></p>  
       </form>
   `,''); 
-  res.send(html);
+  res.send(200,html);
 })
 
 router.get('/page/:pageId', function (req, res) {
@@ -59,7 +59,7 @@ router.get('/page/:pageId', function (req, res) {
       <input type="submit" value="delete">
       </form>`
       ); 
-          res.send(html);        
+          res.send(200,html);        
   });
 });
 
@@ -91,7 +91,7 @@ router.get('/update/:updateId', function (req, res) {
           <input type="submit" value="delete">
       </form>
       </p>`); 
-      res.send(html);
+      res.send(200,html);
 
   });
 });
@@ -101,7 +101,29 @@ router.get('/board', (req, res,) => {
       var title = '글목록';
       var table = template.TABLE(results);
       var html = template.HTML(title, '', table,''); 
-      res.send(html);
+      res.send(200,html);
       })
   })
+
+router.get('/login',(req, res) =>{
+    db.query(`SELECT * FROM author`, function (err, results) {
+        var title = '로그인';
+        var html = template.HTML(title, `<form action="/login_process" method="post">
+        <div>
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+        </div>
+        <div>
+            <label for="current-password">Password</label>
+            <input id="current-password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+        <div>
+            <button type="submit">Sign in</button>
+        </div>
+    </form>`,'',''); 
+    
+res.send(200,html)
+})
+});
+  
   module.exports = router;

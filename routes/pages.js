@@ -7,8 +7,7 @@ router.post('/create_process', function (req, res,) {
   db.query(`INSERT INTO topic (title, description, created, author_id) 
           VALUES(?, ?, NOW(), ?)`,
           [post.title, post.description, 1], 
-          function(err, results){
-              console.log(post);     
+          function(err, results){  
           res.redirect(`/board`);
   });
 })

@@ -22,7 +22,7 @@ module.exports = {
                 <header>    
                     <img src="" alt="로고">
                     <h1>${title}</h1>
-                    <a href="/login_process">로그인</a>
+                    <a href="/login">로그인</a>
                 </header>
                     <nav>
                         <ul class="nav">

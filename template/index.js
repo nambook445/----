@@ -1,6 +1,3 @@
-var mysql      = require('mysql');
-var db = require('../model/db');
-
 module.exports = {
     HTML:function(title, list, body, control){
         return `<!DOCTYPE html>

@@ -1,24 +1,48 @@
 const express = require('express')
 const app = express()
 const port = 8080
+var mysql = require('mysql');
+
 const indexRouter = require('./routes/index');
 const pagesRouter = require('./routes/pages');
 var db = require('./model/db');
 var template = require('./template/index.js');
+var cookieParser = require('cookie-parser')
 var session = require("express-session");
 var bodyParser = require('body-parser');
 var passport = require('passport')
 , LocalStrategy = require('passport-local').Strategy;
 const req = require('express/lib/request');
 
+var MySQLStore = require('express-mysql-session')(session);
+var options = {
+  host: 'localhost',
+  port: 3306,
+  user: 'root',
+  password: 'kcmd53113',
+  database: 'dotolee'
+};
+var connection = mysql.createConnection(options); // or mysql.createPool(options);
+var sessionStore = new MySQLStore({}/* session store options */, connection);
 
+app.use(session({
+	key: 'session_cookie_name',
+	secret: 'session_cookie_secret',
+	store: sessionStore,
+	resave: false,
+	saveUninitialized: false
+}));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cookieParser())
 app.use(express.static('public'));
 app.use(session({ 
-  secret: 'keyboard cat',
+  secret: '1234&*%$#^fdhdiuasnj',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }));
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -32,6 +56,18 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+app.get('/count', function (req, res) {
+  if(req.session.count){
+    req.session.count++;
+  } else {
+    req.session.count = 1;
+  }
+  console.log(req.session.count);
+  res.send('count :'+req.session.count);
+  })
+  app.get('/tmp', function (req, res) {
+    res.send('result :'+req.session.count);
+    })
 
 
   app.get('/login',(req, res) =>{

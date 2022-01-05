@@ -1,5 +1,5 @@
 module.exports = {
-    HTML:function(title, list, body, control){
+    HTML:function(title, list, body, control,login){
         return `<!DOCTYPE html>
         <html lang="ko">
         <head>
@@ -22,7 +22,7 @@ module.exports = {
                 <header>    
                     <img src="" alt="로고">
                     <h1>${title}</h1>
-                    <a href="/login">로그인</a>
+                   ${login}
                 </header>
                     <nav>
                         <ul class="nav">
@@ -60,23 +60,30 @@ module.exports = {
         var tag = '<table>';
         var i = 0;
         while(i < results.length){
-        tag += `
-        <tr>
-            <td>${results[i].id}</td>
-            <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
-            <td>${results[i].created}</a></td>
-            <td>${results[i].author_id}</td>
-            <td><a href="/update/${results[i].id}">update</a></td>
-            <td>
-                <form method="post" action="delete_process">
-                    <input type="hidden" name="id" value="${results[i].id}">
-                    <input type="submit" name="${results[i].id}" value="delete">
-                </form>    
-            </td>
-            </tr>
-        `;
-        i++;
-    }   
-    tag += '</table>';
-    return tag;     
-}};
+            tag += `
+            <tr>
+                <td>${results[i].id}</td>
+                <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
+                <td>${results[i].created}</a></td>
+                <td>${results[i].author_id}</td>
+                <td><a href="/update/${results[i].id}">update</a></td>
+                <td>
+                    <form method="post" action="delete_process">
+                        <input type="hidden" name="id" value="${results[i].id}">
+                        <input type="submit" name="${results[i].id}" value="delete">
+                    </form>    
+                </td>
+                </tr>
+            `;
+            i++;
+        }   
+        tag += '</table>';
+        return tag;     
+    },LOGIN: function (req, res) {
+         var loginStat = `<a href="/login">login</a>`
+        if(req.user){
+            console.log(req.user)
+           loginStat = `${req.user} | <a href="/logout"> logout</a>`
+        } return loginStat;
+      }
+};

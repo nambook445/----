@@ -11,17 +11,16 @@ var MySQLStore = require('express-mysql-session')(session);
 var sessionStore = new MySQLStore({}, db);
 var bodyParser = require('body-parser');
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 app.use(session({
 	key: 'session_cookie_name',
-	secret: 'session_cookie_secret',
+	secret: 'fadasdfh#$^&jk252353',
 	store: sessionStore,
 	resave: false,
 	saveUninitialized: false
 }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -47,15 +46,16 @@ router.get('/login',(req, res) =>{
 });
 
 passport.serializeUser(function(user, done) {
-    console.log(user);
-    done(null, user);
+    console.log('serializeUser', user.username)
+    done(null, user.username);
   });
-passport.deserializeUser(function(username, done) {
-db.query(`SELCET * FROM users WHERE username=?`,[username], function (err, results) {
+passport.deserializeUser(function(id, done) {
+db.query(`SELCET * FROM users WHERE username=?`,[id], function (err, results) {
     if(err){
     done(null, false);
     } else {
-    done(null, results[0]);
+        console.log('deserializeUser',results[0].username)
+    done(null, results[0].username);
     }
     });
     
@@ -65,11 +65,15 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
       db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {
         var user = results[0];
-       if(err){
+       if(!user){
+        console.log('아이디를 찾을 수 없습니다')
          return done(null, false)
-       } else if (!password === results[0].password){
+       } else if (user.password !== password){
+        console.log('비번x')
         return done(null, false)
        } else{
+        console.log('로그인성공')
+        console.log(user);
         return done(null, user)
        }
       });
@@ -80,6 +84,7 @@ router.post('/login',
     passport.authenticate('local', { successRedirect: '/',
     failureRedirect: '/login' })
 );
+
 
 router.get('/login/resister', function(req, res){
     var title = '회원가입';
@@ -109,7 +114,10 @@ router.post('/login/resister', (req, res) =>{
     db.query(`INSERT INTO users (username, password, nickname, created) VALUES (?, ?, ?, NOW())`,[post.username, post.password, post.nickname], function (err, results) {
         if(err){
             throw err;
-        } res.redirect(`/`);
+        }req.login(user, function(err) {
+            if (err) { return next(err); }
+            return res.redirect('/users/' + req.user.username);
+          });
       });
 });
 

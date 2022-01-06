@@ -13,23 +13,23 @@ var sessionStore = new MySQLStore({}, db);
 var bodyParser = require('body-parser');
 
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser())
 app.use(session({
 	key: 'session_cookie_name',
-	secret: 'session_cookie_secret',
+	secret: 'fadasdfh#$^&jk252353',
 	store: sessionStore,
 	resave: false,
 	saveUninitialized: false
 }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser(function(user, done) {
-    done(null, user);
+    done(null, user.username);
   });
-passport.deserializeUser(function(username, done) {
-db.query(`SELCET * FROM users WHERE username=?`,[username], function (err, results) {
+passport.deserializeUser(function(id, done) {
+db.query(`SELCET * FROM users WHERE username=?`,[id], function (err, results) {
     if(err){
     done(null, false);
     } else {
@@ -44,6 +44,8 @@ db.query(`SELCET * FROM users WHERE username=?`,[username], function (err, resul
 
 
 router.get('/', (req, res) => {
+    console.log('/', req.user);
+    
       var title = '마감일기';
       var login = template.LOGIN(req, res)
       var html = template.HTML(title, '', '', '',login);

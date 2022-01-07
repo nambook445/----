@@ -35,7 +35,15 @@ passport.serializeUser(function(user, done) {
   done(null, user.username);
 });
 passport.deserializeUser(function(id, done) {
-  done(null, id.username);
+  db.query(`SELECT * FROM users WHERE username=?`,[id], function (err, results) {
+    if(err){
+      done(null, false)
+    } else {
+      console.log(id);
+      done(null, id);
+      
+    }
+    })
 });
 
 passport.use(new LocalStrategy(
@@ -223,7 +231,9 @@ app.post('/login',
 
 app.get('/logout', function (req, res) {
   req.logOut();
-  res.redirect('/');
+  req.session.save(function () {
+    res.redirect('/');
+  })
 })
 
 app.get('/login/resister', function(req, res){
@@ -252,18 +262,21 @@ app.get('/login/resister', function(req, res){
 
 app.post('/login/resister', (req, res) =>{
     var post = req.body;
-    db.query(`INSERT INTO users (username, password, nickname, created) VALUES (?, ?, ?, NOW())`,[post.username, post.password, post.nickname], function (err, results) {
-        if(err){
-            throw err;
-        }
-        req.login(user, function (err) {
-          if(err){
-            throw err;
-          } res.redirect('/')
+    console.log(post);
+  db.query(`INSERT INTO users (username,password,nickname,created) VALUES (?,?,?, NOW()) `,[post.username,post.password,post.nickname], function (err, results) {
+    var user = post;
+    if(err){
+      
+      res.sendStatus(500);
+    } else{
+      req.login(user, function (err) {
+        req.session.save(function () {
+          res.redirect('/');
           })
-       
-    });
-});
+        })
+    }
+  })
+}); 
 
 
 

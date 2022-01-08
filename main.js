@@ -16,8 +16,6 @@ var sessionStore = new MySQLStore({}, db);
 var flash = require('connect-flash');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
 
 
 
@@ -49,13 +47,6 @@ passport.deserializeUser(function(id, done) {
     })
 });
 
-// bcrypt.genSalt(saltRounds, function(err, salt) {
-//   bcrypt.hash(post.password, 10, function(err, hash) {
-//       // Store hash in your password DB.
-//       bcrypt.compareSync(myPlaintextPassword, hash); // true
-// bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
-//   });
-// });
 passport.use(new LocalStrategy(
   function(username, password, done) {
     db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {

@@ -14,6 +14,11 @@ var LocalStrategy = require('passport-local').Strategy;
 var MySQLStore = require('express-mysql-session')(session);
 var sessionStore = new MySQLStore({}, db);
 var flash = require('connect-flash');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+
 
 
 app.use(flash());
@@ -39,54 +44,64 @@ passport.deserializeUser(function(id, done) {
     if(err){
       done(null, false)
     } else {
-      console.log(id);
       done(null, id);
-      
     }
     })
 });
 
+// bcrypt.genSalt(saltRounds, function(err, salt) {
+//   bcrypt.hash(post.password, 10, function(err, hash) {
+//       // Store hash in your password DB.
+//       bcrypt.compareSync(myPlaintextPassword, hash); // true
+// bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
+//   });
+// });
 passport.use(new LocalStrategy(
   function(username, password, done) {
     db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {
       var user = results[0];
      if(!user){
        return done(null, false, { message: '아이디를 찾을 수 없습니다.' })
-     } else if (user.password !== password){
-      return done(null, false, { message: '비밀번호가 틀렸습니다.' })
-     } else{
+     } else if(!bcrypt.compareSync(password, user.password)) {       
+          return done(null, false,{ message: '비밀번호가 틀렸습니다.' })        
+     } else {
       return done(null, user)
-     }
+     } 
     });
   }
 ));
+
+
+
 
 app.get('/', (req, res) => {
     var title = '마감일기';
     var login = template.LOGIN(req, res)
     var html = template.HTML(title, '', '', '',login);
     res.send(html);
-
 })
 
 app.get('/create', function (req, res) {
-var title = '글쓰기';
-var login = template.LOGIN(req, res)
-var html = template.HTML(title, '',`
-    <form class="form" method="post" action="/create_process">
-        <input class="title" type="text" name="title" placeholder="title">
-        <textarea id="summernote" name="description"></textarea>
-        <script>
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                lang: 'ko-KR' // default: 'en-US'
+  if(!template.ISOWNER(req, res)){
+    res.redirect('/login')
+  } else {
+    var title = '글쓰기';
+    var login = template.LOGIN(req, res)
+    var html = template.HTML(title, '',`
+        <form class="form" method="post" action="/create_process">
+            <input class="title" type="text" name="title" placeholder="title">
+            <textarea id="summernote" name="description"></textarea>
+            <script>
+                $(document).ready(function() {
+                    $('#summernote').summernote({
+                    lang: 'ko-KR' // default: 'en-US'
+                    });
                 });
-            });
-        </script>                     
-        <p><input type="submit" value="마감"></p>  
-    </form>
-`,'',login); 
-res.send(html);
+            </script>                     
+            <p><input type="submit" value="마감"></p>  
+        </form>
+    `,'',login); 
+    res.send(html);}
 })
 
 app.get('/page/:pageId', function (req, res) {
@@ -124,38 +139,45 @@ db.query(`SELECT * FROM topic WHERE id=?`,[req.params.pageId],function (err, res
 });
 
 app.get('/update/:updateId', function (req, res) {
-db.query(`SELECT * FROM topic WHERE id=?`,[req.params.updateId],function (err, results) {
-  if(err){
-      throw err;
-  }
-  var title = results[0].title;
-  var login = template.LOGIN(req, res)
-  var description = results[0].description;
-  var html = template.HTML(title, '', `
-    <form class="form" method="post" action="/update_process">
-        <input type="hidden" name="id" value="${results[0].id}"> 
-        <input class="title" type="text" name="title" placeholder="title" value="${title}">
-        <textarea id="summernote" name="description">${description}</textarea>
-        <script>
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                lang: 'ko-KR' // default: 'en-US'
+  if(!template.ISOWNER(req, res)){
+    res.redirect('/login')
+  } else {
+    db.query(`SELECT * FROM topic WHERE id=?`,[req.params.updateId],function (err, results) {
+      if(err){
+          throw err;
+      }
+      var title = results[0].title;
+      var login = template.LOGIN(req, res)
+      var description = results[0].description;
+      var html = template.HTML(title, '', `
+        <form class="form" method="post" action="/update_process">
+            <input type="hidden" name="id" value="${results[0].id}"> 
+            <input class="title" type="text" name="title" placeholder="title" value="${title}">
+            <textarea id="summernote" name="description">${description}</textarea>
+            <script>
+                $(document).ready(function() {
+                    $('#summernote').summernote({
+                    lang: 'ko-KR' // default: 'en-US'
+                    });
                 });
-            });
-        </script>                     
-        <p><input type="submit" value="마감"></p>  
-    </form>
-    `,`
-    <p>
-    <form method="post" action="/delete_process">
-        <input type="hidden" name="id" value="${results[0].id}">
-        <input type="submit" value="delete">
-    </form>
-    </p>`,login); 
-    res.send(html);
+            </script>                     
+            <p><input type="submit" value="마감"></p>  
+        </form>
+        `,`
+        <p>
+        <form method="post" action="/delete_process">
+            <input type="hidden" name="id" value="${results[0].id}">
+            <input type="submit" value="delete">
+        </form>
+        </p>`,login); 
+      res.send(html);
+    });
+  }
+});
 
-});
-});
+    
+  
+
 
 app.get('/board', (req, res,) => {
 db.query(`SELECT * FROM topic`, function (err, results) {
@@ -167,7 +189,7 @@ db.query(`SELECT * FROM topic`, function (err, results) {
     })
 })
 
-app.post('/create_process', function (req, res,) {
+app.post('/create_process', function (req, res) {
   var post = req.body;
   db.query(`INSERT INTO topic (title, description, created, author_id) 
           VALUES(?, ?, NOW(), ?)`,
@@ -188,13 +210,17 @@ app.post('/update_process', function (req, res,) {
 });
 
 app.post('/delete_process', function (req, res) {
-  var post = req.body;
-  db.query(`DELETE FROM topic WHERE id = ?`, [post.id], function (err, results) {
-      if(err){
-          throw err;
-      }
-      res.redirect('/board')
-  })
+  if(!template.ISOWNER(req, res)){
+    res.redirect('/login')
+  } else {
+    var post = req.body;
+    db.query(`DELETE FROM topic WHERE id = ?`, [post.id], function (err, results) {
+        if(err){
+            throw err;
+        }
+        res.redirect('/board')
+    })
+  }
 })
 app.get('/login',(req, res) =>{
   var fmsg = req.flash();
@@ -260,33 +286,28 @@ app.get('/login/resister', function(req, res){
     res.send(html);
 });
 
+
 app.post('/login/resister', (req, res) =>{
     var post = req.body;
-    console.log(post);
-  db.query(`INSERT INTO users (username,password,nickname,created) VALUES (?,?,?, NOW()) `,[post.username,post.password,post.nickname], function (err, results) {
-    var user = post;
-    if(err){
-      
-      res.sendStatus(500);
-    } else{
-      req.login(user, function (err) {
-        req.session.save(function () {
-          res.redirect('/');
-          })
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.hash(post.password, salt, function(err, hash) {
+        db.query(`INSERT INTO users (username,password,nickname,created) VALUES (?,?,?, NOW()) `,[post.username,hash,post.nickname], function (err, results) {
+          var user = post;
+          if(err){   
+            res.sendStatus(500);
+          } else{
+            req.login(user, function (err) {
+              req.session.save(function () {
+                res.redirect('/');
+                })
+              })
+          }
         })
-    }
-  })
-}); 
+      });     
+    });
+});
 
-
-
-
-
-
-
-
-
-
+  
 
 
 

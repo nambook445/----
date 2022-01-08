@@ -85,5 +85,11 @@ module.exports = {
             console.log(req.user)
            loginStat = `${req.user} | <a href="/logout"> logout</a>`
         } return loginStat;
-      }
+      },ISOWNER: function (req, res) {
+          if(req.user){
+              return true;
+          } else {
+              return false;
+          }
+        }
 };

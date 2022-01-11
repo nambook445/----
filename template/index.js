@@ -65,7 +65,7 @@ module.exports = {
                 <td>${results[i].id}</td>
                 <td><a href="/page/${results[i].id}">${results[i].title}</a></td>
                 <td>${results[i].created}</a></td>
-                <td>${results[i].author_id}</td>
+                <td>${results[i].nickname}</td>
                 <td><a href="/update/${results[i].id}">update</a></td>
                 <td>
                     <form method="post" action="delete_process">

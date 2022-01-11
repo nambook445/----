@@ -35,9 +35,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
+    console.log('serializeUser')
   done(null, user.username);
 });
 passport.deserializeUser(function(id, done) {
+    console.log('deserializeUser');
   db.query(`SELECT * FROM users WHERE username=?`,[id], function (err, results) {
     if(err){
       done(null, false)
@@ -48,8 +50,8 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(new LocalStrategy(
-  
   function(username, password, done) {
+    console.log('LocalStrategy');
     db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {
       var user = results[0];
      if(!user){
@@ -81,55 +83,53 @@ app.get('/create', function (req, res) {
     var login = template.LOGIN(req, res)
     var html = template.HTML(title, '',`
         <form class="form" method="post" action="/create_process">
-          <input type="hidden" name="user_id" value='${req.user}'>
-          <input class="title" type="text" name="title" placeholder="title">
-          <textarea id="summernote" name="description"></textarea>
-          <script>
-              $(document).ready(function() {
-                  $('#summernote').summernote({
-                  lang: 'ko-KR' // default: 'en-US'
-                  });
-              });
-          </script>                     
-          <p><input type="submit" value="마감"></p>  
+            <input class="title" type="text" name="title" placeholder="title">
+            <textarea id="summernote" name="description"></textarea>
+            <script>
+                $(document).ready(function() {
+                    $('#summernote').summernote({
+                    lang: 'ko-KR' // default: 'en-US'
+                    });
+                });
+            </script>                     
+            <p><input type="submit" value="마감"></p>  
         </form>
     `,'',login); 
     res.send(html);}
 })
 
 app.get('/page/:pageId', function (req, res) {
-  var sql = `SELECT topic.id, title, description, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id WHERE topic.id=?`;
-  db.query(sql,[req.params.pageId],function (err, results) {
-      if(err){
-          throw err;
-      }
-      var title = results[0].title;
-      var login = template.LOGIN(req, res)
-      var description = results[0].description;
-      var html = template.HTML(title, `${results[0].nickname}`, `
-      <form class="form" method="post" action="/create_process">
-          <input class="title" type="text" name="title" placeholder="title" value="${title}">
-          <textarea id="summernote" name="description">${description}</textarea>
-          <script>
-              $(document).ready(function() {
-                  $('#summernote').summernote({
-                  lang: 'ko-KR' // default: 'en-US'
-                  });
-              });
-          </script>                     
-          <p><input type="submit" value="마감"></p>  
-      </form>
-      <a href="/update/${req.params.pageId}">update</a>
-      `,
-        ` 
-      <p>
-      <form method="post" action="/delete_process">
-      <input type="hidden" name="id" value="${req.params.pageId}">
-      <input type="submit" value="delete">
-      </form>`
-      ,login); 
-          res.send(html);        
-  });
+db.query(`SELECT * FROM topic WHERE id=?`,[req.params.pageId],function (err, results) {
+    if(err){
+        throw err;
+    }
+    var title = results[0].title;
+    var login = template.LOGIN(req, res)
+    var description = results[0].description;
+    var html = template.HTML(title, '', `
+    <form class="form" method="post" action="/create_process">
+        <input class="title" type="text" name="title" placeholder="title" value="${title}">
+        <textarea id="summernote" name="description">${description}</textarea>
+        <script>
+            $(document).ready(function() {
+                $('#summernote').summernote({
+                lang: 'ko-KR' // default: 'en-US'
+                });
+            });
+        </script>                     
+        <p><input type="submit" value="마감"></p>  
+    </form>
+    <a href="/update/${req.params.pageId}">update</a>
+    `,
+      ` 
+    <p>
+    <form method="post" action="/delete_process">
+    <input type="hidden" name="id" value="${req.params.pageId}">
+    <input type="submit" value="delete">
+    </form>`
+    ,login); 
+        res.send(html);        
+});
 });
 
 app.get('/update/:updateId', function (req, res) {
@@ -174,32 +174,28 @@ app.get('/update/:updateId', function (req, res) {
 
 
 app.get('/board', (req, res,) => {
-  var sql = `SELECT topic.id, title, topic.created, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id `;
-  db.query(sql, function (err, results) {
-      var title = '글목록';
-      var login = template.LOGIN(req, res)
-      var table = template.TABLE(results);
-      var html = template.HTML(title, '', table,'',login); 
-      res.send(html);
-  })
+db.query(`SELECT * FROM topic`, function (err, results) {
+    var title = '글목록';
+    var login = template.LOGIN(req, res)
+    var table = template.TABLE(results);
+    var html = template.HTML(title, '', table,'',login); 
+    res.send(html);
+    })
 })
 
 app.post('/create_process', function (req, res) {
   var post = req.body;
-  db.query(`SELECT * FROM users WHERE username=?`,[post.user_id], function (err, results) {
-    var usersID = results[0].id;
-    var sql = `INSERT INTO topic (title, description, created, user_id) 
-    VALUES(?, ?, NOW(), ?)`
-    db.query(sql, [post.title, post.description, usersID], 
-      function(err, results){  
-        res.redirect(`/board`);
-    });
-  })
+  db.query(`INSERT INTO topic (title, description, created, author_id) 
+          VALUES(?, ?, NOW(), ?)`,
+          [post.title, post.description, 1], 
+          function(err, results){  
+          res.redirect(`/board`);
+  });
 })
 
 app.post('/update_process', function (req, res,) {
   var post = req.body;
-  db.query(`UPDATE topic SET title=?, description=? WHERE id=?`, [post.title, post.description, post.id],function(err, results){
+  db.query('UPDATE topic SET title=?, description=?, author_id=1 WHERE id=?', [post.title, post.description, post.id],function(err, results){
       if(err){
           throw err;
       }     
@@ -289,8 +285,9 @@ app.post('/login/resister', (req, res) =>{
     var post = req.body;
     bcrypt.genSalt(saltRounds, function(err, salt) {
       bcrypt.hash(post.password, salt, function(err, hash) {
-        db.query(`INSERT INTO users (username, password, nickname, created) VALUES (?, ?, ?, NOW())`,[post.username, hash, post.nickname], function (err, results) {
+        db.query(`INSERT INTO users (username,password,nickname,created) VALUES (?,?,?, NOW()) `,[post.username,hash,post.nickname], function (err, results) {
           var user = post;
+          console.log(user);
           if(err){   
             res.sendStatus(500);
           } else{

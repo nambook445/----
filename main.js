@@ -174,7 +174,7 @@ app.get('/update/:updateId', function (req, res) {
 // // var sql = 'SELECT * FROM topic LIMIT'+limit+'OFFSET'+offset;
 // var sql = 'SELECT topic.id, title, topic.created, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT'+limit+'OFFSET'+offset;
 
-app.get('/board/:pageId', (req, res,) => {
+app.get('/board/:pageId', (req, res) => {
   var limit = 10;
   var pageNum = Number(req.params.pageId);
   var offset = (pageNum -1)*limit;
@@ -182,7 +182,7 @@ app.get('/board/:pageId', (req, res,) => {
   db.query(sql, [limit, offset], function (err, results) {
       var title = '글목록';
       var login = template.LOGIN(req, res)
-      var table = template.TABLE(results);
+      var table = template.BOARD(results);
       var html = template.HTML(title, '', table,'',login); 
       res.send(html);
   })

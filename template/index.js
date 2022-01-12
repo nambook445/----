@@ -56,9 +56,17 @@ module.exports = {
         }   
     list = list+'</ul>';
     return list;      
-    },TABLE:function (results) {
-        var tag = '<table>';
-        var i = 0;
+    },BOARD:function (results) {
+        var tag = `<table>
+                    <tr>
+                        <td>번호</td>
+                        <td>제목</td>
+                        <td>등록시간</td>
+                        <td>닉네임</td>
+                        <td>수정</td>
+                        <td>삭제</td>
+                    </tr>`
+        var i = 0;            
         while(i < results.length){
             tag += `
             <tr>
@@ -76,8 +84,11 @@ module.exports = {
                 </tr>
             `;
             i++;
-        }   
-        tag += '</table>';
+        }    
+        tag += `
+        </table>
+        `
+        ;
         return tag;     
     },LOGIN: function (req, res) {
          var loginStat = `<a href="/login">login</a>`
@@ -91,5 +102,5 @@ module.exports = {
           } else {
               return false;
           }
-        }
+        },
 };

@@ -28,7 +28,7 @@ module.exports = {
                         <ul class="nav">
                             <li><a href="/">홈</a></li>
                             <li><a href="/create">글쓰기</a></li>
-                            <li><a href="/board">관리</a></li>
+                            <li><a href="/board/1">관리</a></li>
                         </ul>
                     </nav>
             </div>

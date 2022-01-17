@@ -175,16 +175,22 @@ app.get('/update/:updateId', function (req, res) {
 // var sql = 'SELECT topic.id, title, topic.created, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT'+limit+'OFFSET'+offset;
 
 app.get('/board/:pageId', (req, res) => {
-  var limit = 10;
-  var pageNum = Number(req.params.pageId);
-  var offset = (pageNum -1)*limit;
-  var sql = 'SELECT topic.id, topic.title, topic.created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT ? OFFSET ?';
-  db.query(sql, [limit, offset], function (err, results) {
-      var title = '글목록';
-      var login = template.LOGIN(req, res)
-      var table = template.BOARD(results);
-      var html = template.HTML(title, '', table,'',login); 
-      res.send(html);
+  var sql = 'SELECT * FROM topic';
+  db.query(sql, function (err, results) {
+    var postNum = results.length
+    var limit = 10;
+    var listNum = Math.ceil(postNum/limit)
+    var pageNum = Number(req.params.pageId);
+    var offset = (pageNum -1)*limit;
+    var sql = 'SELECT topic.id, topic.title, topic.created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT ? OFFSET ?';
+    db.query(sql, [limit, offset], function (err, results) {
+        var title = '글목록';
+        var control = template.LISTCONTROL(listNum);
+        var login = template.LOGIN(req, res)
+        var table = template.BOARD(results);
+        var html = template.HTML(title, table, control , '',login); 
+        res.send(html);
+    })
   })
 })
 
@@ -196,7 +202,7 @@ app.post('/create_process', function (req, res) {
     VALUES(?, ?, NOW(), ?)`
     db.query(sql, [post.title, post.description, usersID], 
       function(err, results){  
-        res.redirect(`/board`);
+        res.redirect(`/board/1`);
     });
   })
 })
@@ -207,7 +213,7 @@ app.post('/update_process', function (req, res,) {
       if(err){
           throw err;
       }     
-      res.redirect(`/board`);
+      res.redirect(`/board/1`);
   });
 });
 
@@ -220,7 +226,7 @@ app.post('/delete_process', function (req, res) {
         if(err){
             throw err;
         }
-        res.redirect('/board')
+        res.redirect('/board/1')
     })
   }
 })

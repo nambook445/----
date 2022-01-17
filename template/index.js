@@ -96,11 +96,20 @@ module.exports = {
             console.log(req.user)
            loginStat = `${req.user} | <a href="/logout"> logout</a>`
         } return loginStat;
-      },ISOWNER: function (req, res) {
+    },ISOWNER: function (req, res) {
           if(req.user){
               return true;
           } else {
               return false;
           }
-        },
+    },LISTCONTROL: function (listNum) {
+        var tag = '<table>';
+        var i = 1;
+        while(i <= listNum){
+           tag += `<td><a href="/board/${i}">${i}</a></td>`
+            i++;
+        }
+        tag += '</table>';
+        return tag;
+      }
 };

@@ -102,14 +102,26 @@ module.exports = {
           } else {
               return false;
           }
-    },LISTCONTROL: function (listNum) {
-        var tag = '<table>';
+    },LISTCONTROL: function (listNum, pageNum) {
+        // var curpage = pageNum;
+        // var startpage = ;
+        // var pagelimit = 5;
+        
+        // }
+        
+        
+        
+        var tag = `
+        <table>
+        <td><a href="/board/"><</a></td>`;
         var i = 1;
         while(i <= listNum){
            tag += `<td><a href="/board/${i}">${i}</a></td>`
             i++;
         }
-        tag += '</table>';
+        tag += `
+        <td><a href="/board/">></a></td>
+        </table>`;
         return tag;
       }
 };

@@ -17,8 +17,6 @@ var flash = require('connect-flash');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-
-
 app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.json());
@@ -116,8 +114,7 @@ app.get('/page/:pageId', function (req, res) {
                   lang: 'ko-KR' // default: 'en-US'
                   });
               });
-          </script>                     
-          <p><input type="submit" value="마감"></p>  
+          </script>                      
       </form>
       <a href="/update/${req.params.pageId}">update</a>
       `,
@@ -182,11 +179,12 @@ app.get('/board/:pageId', (req, res) => {
     var listNum = Math.ceil(postNum/limit)
     var pageNum = Number(req.params.pageId);
     var offset = (pageNum -1)*limit;
-    var sql = 'SELECT topic.id, topic.title, topic.created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT ? OFFSET ?';
+    var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
     db.query(sql, [limit, offset], function (err, results) {
         var title = '글목록';
-        var control = template.LISTCONTROL(listNum);
+        var control = template.LISTCONTROL(listNum,pageNum);
         var login = template.LOGIN(req, res)
+        console.log(results);
         var table = template.BOARD(results);
         var html = template.HTML(title, table, control , '',login); 
         res.send(html);

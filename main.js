@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const port = 8080;
-var db = require('./model/db');
+const db = require('./model/db');
+const axios = require('axios');
 // const indexRouter = require('./routes/index');
 // const pagesRouter = require('./routes/pages');
 // const loginRouter = require('./routes/login');
@@ -15,12 +16,16 @@ var MySQLStore = require('express-mysql-session')(session);
 var sessionStore = new MySQLStore({}, db);
 var flash = require('connect-flash');
 const bcrypt = require('bcrypt');
+const { Axios } = require('axios');
 const saltRounds = 10;
 
+app.set('view engine', 'pug');
+app.set('views', './views');
+app.locals.pretty = true;
 app.use(flash());
 app.use(express.static('public'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(session({
 	key: 'connect.sid',
@@ -63,6 +68,14 @@ passport.use(new LocalStrategy(
 
 
 
+app.get('/template', function (req, res) {
+  res.render('index',{
+    title: 'template',
+    message: 'hello wolrd',
+    time: Date()
+  });
+  });
+
 
 app.get('/', (req, res) => {
     var title = '마감일기';
@@ -74,7 +87,7 @@ app.get('/', (req, res) => {
 app.get('/create', function (req, res) {
   if(!template.ISOWNER(req, res)){
     res.redirect('/login')
-  } else {
+  } else { 
     var title = '글쓰기';
     var login = template.LOGIN(req, res)
     var html = template.HTML(title, '',`

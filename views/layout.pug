@@ -1,63 +1,48 @@
 doctype html
-html(lang='en')
- head
-  meta(charset='UTF-8')
-  meta(http-equiv='X-UA-Compatible' content='IE=edge')
-  meta(name='viewport' content='width=device-width, initial-scale=1.0')
-  link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3' crossorigin='anonymous')
-  title Document
- body
-  header
-   nav.navbar.fixed-top.navbar-expand-md.navbar-light.bg-light
-    .container-fluid
-     a.navbar-brand(href='#') Navbar
-     button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
-      span.navbar-toggler-icon
-     #navbarSupportedContent.collapse.navbar-collapse.row
-      ul.navbar-nav.col
-       li.nav-item.ms-md-3
-        a.nav-link.active(aria-current='page' href='#') Home
-       li.nav-item
-        a.nav-link(href='#') Link
-       li.nav-item
-        a.nav-link(href='#') Link
-       li.nav-item
-        a.nav-link(href='#') Link
-       .ms-auto.me-md-1
-        form.d-flex
-         input.form-control.me-2(type='search' placeholder='Search' aria-label='Search')
-         button.btn.btn-outline-success(type='submit') Search
-       .col-auto
-        li.nav-item
-         a.nav-link(href='#') Login
-  main
-   block content
-  footer.footer.text-center
-   .container
-    .row
-     // Footer Location
-     .col-lg-4.mb-5.mb-lg-0
-      h4.text-uppercase.mb-4 Location
-      p.lead.mb-0
-       | 2215 John Daniel Drive
-       br
-       |  Clark, MO 65243
-     // Footer Social Icons
-     .col-lg-4.mb-5.mb-lg-0
-      h4.text-uppercase.mb-4 Around the Web
-      a.btn.btn-outline-light.btn-social.mx-1(href='#!')
-       i.fab.fa-fw.fa-facebook-f
-      a.btn.btn-outline-light.btn-social.mx-1(href='#!')
-       i.fab.fa-fw.fa-twitter
-      a.btn.btn-outline-light.btn-social.mx-1(href='#!')
-       i.fab.fa-fw.fa-linkedin-in
-      a.btn.btn-outline-light.btn-social.mx-1(href='#!')
-       i.fab.fa-fw.fa-dribbble
-     // Footer About Text
-     .col-lg-4
-      h4.text-uppercase.mb-4 About Freelancer
-      p.lead.mb-0
-       | Freelance is a free to use, MIT licensed Bootstrap theme created by
-       a(href='http://startbootstrap.com') Start Bootstrap
-       |  .
-  script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js' integrity='sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p' crossorigin='anonymous')
+html.h-100(lang='en')
+	head
+		meta(charset='utf-8')
+		meta(name='viewport' content='width=device-width, initial-scale=1')
+		title Cover Template · Bootstrap v5.0
+		link(href='/css/bootstrap.min.css' rel='stylesheet')
+		link(href='/css/cover.css' rel='stylesheet')
+		block style
+		style.
+			.bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+			}
+			@media (min-width: 768px) {
+			.bd-placeholder-img-lg {
+			font-size: 3.5rem;
+			}
+			}
+	body.d-flex.h-100.text-center.text-white.bg-dark
+		.cover-container.d-flex.w-100.h-100.p-3.mx-auto.flex-column
+			header.mb-auto
+				div
+					h3.float-md-start.mb-0 Cover
+					nav.nav.nav-masthead.justify-content-center.float-md-end
+						a.nav-link.active(aria-current='page' href='/') Home
+						a.nav-link(href='/board') Board
+						a.nav-link(href='/create') Create
+						a.nav-link(href='/login') Login
+			main.px-3
+				h1 Cover your page.
+				p.lead
+					| Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.
+				p.lead
+					a.btn.btn-lg.btn-secondary.fw-bold.border-white.bg-white(href='#') Learn more
+			section 
+				block content	
+			footer.mt-auto.text-white-50
+				p
+					| Cover template for 
+					a.text-white(href='https://getbootstrap.com/') Bootstrap
+					| , by 
+					a.text-white(href='https://twitter.com/mdo') @mdo
+					| .
+			block js

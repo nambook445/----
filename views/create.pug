@@ -1,0 +1,20 @@
+extends ./layout.pug
+block style
+	link(href='https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css' rel='stylesheet')
+
+block content
+	form.form(method='post' action='/create')
+		input(type='hidden' name='user_id' value=user)
+		input.title(type='text' name='title' placeholder='title')
+		textarea#summernote(name='description')
+		
+		p
+			input(type='submit' value='마감')
+block js 
+	script(src='https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js')
+	script.
+			$(document).ready(function() {
+			$('#summernote').summernote({
+			lang: 'ko-KR' // default: 'en-US'
+			});
+			});

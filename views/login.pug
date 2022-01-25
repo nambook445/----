@@ -1,69 +1,16 @@
-<section class="page-section" id="contact">
-      <div class="container">
-        <!-- Contact Section Heading-->
-        <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">LOGIN</h2>
-        <!-- Icon Divider-->
-        <div class="divider-custom">
-          <div class="divider-custom-line"></div>
-          <div class="divider-custom-icon"><svg class="svg-inline--fa fa-star fa-w-18" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg=""><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path></svg><!-- <i class="fas fa-star"></i> Font Awesome fontawesome.com --></div>
-          <div class="divider-custom-line"></div>
-        </div>
-        <!-- Contact Section Form-->
-        <div class="row justify-content-center">
-          <div class="col-lg-8 col-xl-7">
-            <!-- * * * * * * * * * * * * * * *-->
-            <!-- * * SB Forms Contact Form * *-->
-            <!-- * * * * * * * * * * * * * * *-->
-            <!-- This form is pre-integrated with SB Forms.-->
-            <!-- To make this form functional, sign up at-->
-            <!-- https://startbootstrap.com/solution/contact-forms-->
-            <!-- to get an API token!-->
-            <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-              <!-- Name input-->
-              <div class="form-floating mb-3">
-                <input class="form-control is-invalid" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" data-sb-can-submit="no">
-                <label for="name">Full name</label>
-                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-              </div>
-              <!-- Email address input-->
-              <div class="form-floating mb-3">
-                <input class="form-control is-invalid" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" data-sb-can-submit="no">
-                <label for="email">Email address</label>
-                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
-              </div>
-              <!-- Phone number input-->
-              <div class="form-floating mb-3">
-                <input class="form-control is-invalid" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" data-sb-can-submit="no">
-                <label for="phone">Phone number</label>
-                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
-              </div>
-              <!-- Message input-->
-              <div class="form-floating mb-3">
-                <textarea class="form-control is-invalid" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required" data-sb-can-submit="no"></textarea>
-                <label for="message">Message</label>
-                <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
-              </div>
-              <!-- Submit success message-->
-              <!-- -->
-              <!-- This is what your users will see when the form-->
-              <!-- has successfully submitted-->
-              <div class="d-none" id="submitSuccessMessage">
-                <div class="text-center mb-3">
-                  <div class="fw-bolder">Form submission successful!</div> To activate this form, sign up at<br><a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                </div>
-              </div>
-              <!-- Submit error message-->
-              <!-- -->
-              <!-- This is what your users will see when there is-->
-              <!-- an error submitting the form-->
-              <div class="d-none" id="submitErrorMessage">
-                <div class="text-center text-danger mb-3">Error sending message!</div>
-              </div>
-              <!-- Submit Button-->
-              <button class="btn btn-primary btn-xl disabled" id="submitButton" type="submit">Send</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+extends ./layout.pug
+block style
+	link(href='/css/signin.css' rel='stylesheet')
+block content
+	form.form-signin(action='/login' method='post')
+		h1.h3.mb-3.fw-normal Please sign in
+		.form-floating
+			input#floatingInput.form-control(name='username' type='text' placeholder='ID' autocomplete='username' required='')
+			label(for='floatingInput') ID
+		.form-floating
+			input#floatingPassword.form-control(name='password' type='password' placeholder='Password' required='')
+			label(for='floatingPassword') Password
+		.checkbox.mb-3
+			label
+		button.w-100.btn.btn-lg.btn-primary(type='submit') Sign in
+	p.mt-5.mb-3.text-muted © 2017–2021

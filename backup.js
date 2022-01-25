@@ -38,7 +38,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user.username);
 });
 passport.deserializeUser(function(id, done) {
   db.query(`SELECT * FROM users WHERE username=?`,[id], function (err, results) {
@@ -51,6 +51,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(new LocalStrategy(
+  
   function(username, password, done) {
     db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {
       var user = results[0];
@@ -66,22 +67,33 @@ passport.use(new LocalStrategy(
 ));
 
 
-app.get('/', (req, res)=>{res.render('index')})
-app.get('/login', (req, res)=>{res.render('login')})
-app.get('/board', (req, res)=>{db.query('SELECT * FROM topic',
-  (err, results) =>	{var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
-		db.query(sql, [10, 0], (err, results) =>{res.render('board',{results});
+
+app.get('/template', function (req, res) {
+  res.render('index',{
+    title: 'template',
+    message: 'hello wolrd',
+    time: Date()
+  });
+});
+
+app.get('/login',(req, res) => {res.render('login')});
+
+
+
+app.get('/board', (req, res) => {
+	db.query('SELECT * FROM topic', (err, results) =>
+	{var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
+		db.query(sql, [10, 0], (err, results) =>{
+			res.render('board',{results});
 		});
 	});
 });
-app.get('/template/create', (req, res)=>{
-	res.render('create',{
-		user: req.user
-	})})
 
 
 
-
+app.get('/', (req, res) => {
+  res.render('index');
+})
 
 app.get('/create', function (req, res) {
   if(!template.ISOWNER(req, res)){
@@ -179,11 +191,65 @@ app.get('/update/:updateId', function (req, res) {
 });
 
 
+// var offset = (pageNum -1)*limit;
+// // var sql = 'SELECT * FROM topic LIMIT'+limit+'OFFSET'+offset;
+// var sql = 'SELECT topic.id, title, topic.created, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id LIMIT'+limit+'OFFSET'+offset;
 
-app.post('/create', (req, res)=>{
-	console.log(req.body);
-  var sql = `INSERT INTO topic (title, description, created, user_id) VALUES(?, ?, NOW(), ?)`
-  db.query(sql, [req.body.title, req.body.description, req.body.user_id], (err, results)=>{res.redirect('/board');});
+// app.get('boared/:pageId', (req,res) => {
+// 	var	sql = 'SELECT * FROM topic';
+// 	db.query(sql, function(err, results) {
+// 		console.log(req.params.pageId);
+// 		var postNum = results.length
+// 		var	limit = 10;
+// 		// var	listNum = Math.ceil(postNum/limit)
+//     var pageNum = Number(req.params.pageId);
+//     var offset = (pageNum -1)*limit;
+// 		var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
+// 		db.query(sql, [limit, offset], function(err, results)	
+// 		{ 
+// 				res.render('board',{
+// 					id: results[0].id,
+// 					title: results[0].id,
+// 					created: results[0].created,
+// 					nickname: results[0].nickname
+// 				})
+// 			}
+// 	)})
+// })
+
+// app.get('/board/:pageId', (req, res) => {
+//   var sql = 'SELECT * FROM topic';
+//   db.query(sql, function (err, results) {
+//     var postNum = results.length
+//     var limit = 10;
+//     var listNum = Math.ceil(postNum/limit)
+//     var pageNum = Number(req.params.pageId);
+//     var offset = (pageNum -1)*limit;
+//     var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
+//     db.query(sql, [limit, offset], function (err, results) {
+// 			console.log(results);
+//         var title = '글목록';
+//         var control = template.LISTCONTROL(listNum,pageNum);
+//         var login = template.LOGIN(req, res)
+//         console.log(results);
+//         var table = template.BOARD(results);
+//         var html = template.HTML(title, table, control , '',login); 
+//         res.send(html);
+//     })
+//   })
+// })
+
+app.post('/create_process', function (req, res) {
+  var post = req.body;
+  db.query(`SELECT * FROM users WHERE username=?`,[post.user_id], function (err, results) {
+    var usersID = results[0].id;
+    var sql = `INSERT INTO topic (title, description, created, user_id) 
+    VALUES(?, ?, NOW(), ?)`
+    db.query(sql, [post.title, post.description, usersID], 
+      function(err, results){  
+        res.redirect(`/board/1`);
+    });
+  })
 })
 
 app.post('/update_process', function (req, res,) {
@@ -209,6 +275,33 @@ app.post('/delete_process', function (req, res) {
     })
   }
 })
+app.get('/login',(req, res) =>{
+  var fmsg = req.flash();
+  var feedback = '';
+  if(fmsg.error){
+    feedback = fmsg.error[0];
+  }
+  var title = '로그인';
+  var login = template.LOGIN(req, res)
+  var html = template.HTML(title, feedback,`
+    <a href="/login/resister">회원가입</a>
+    
+    <form action="/login" method="post">
+      <div>
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required />
+					
+      </div>
+      <div>
+          <label for="current-password">Password</label>
+          <input id="current-password" name="password" type="password" autocomplete="current-password" required />
+      </div>
+      <div>
+          <button type="submit">Sign in</button>
+      </div>
+    </form>`,'',login);     
+  res.send(html)
+});
 
 app.post('/login',
     passport.authenticate('local', { successRedirect: '/',
@@ -216,7 +309,7 @@ app.post('/login',
     failureFlash: true })
 );
 
-app.get('/logout', (req, res) =>{
+app.get('/logout', function (req, res) {
   req.logOut();
   req.session.save(function () {
     res.redirect('/');

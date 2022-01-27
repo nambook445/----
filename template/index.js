@@ -16,7 +16,7 @@ module.exports = {
 
             <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
             <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-            
+
             <title>${title}</title>
         </head>
         <body>
@@ -93,12 +93,10 @@ module.exports = {
         ;
         return tag;     
     },LOGIN: function (req, res) {
-         var loginStat = `<a href="/login">login</a>`
-        if(req.user){
-            console.log(req.user)
-           loginStat = `${req.user} | <a href="/logout"> logout</a>`
-        } return loginStat;
-    },ISOWNER: function (req, res) {
+        if(!req.user){
+          return '<a class="nav-link" href="/login">Login</a>'
+        } return "<a class='nav-link' href='/logout'>Logout</a>"
+    },IsOwner: function (req, res) {
           if(req.user){
               return true;
           } else {

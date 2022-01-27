@@ -3,9 +3,6 @@ const app = express();
 const port = 8080;
 const db = require('./model/db');
 const axios = require('axios');
-// const indexRouter = require('./routes/index');
-// const pagesRouter = require('./routes/pages');
-// const loginRouter = require('./routes/login');
 var template = require('./template/index.js');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser')
@@ -66,233 +63,129 @@ passport.use(new LocalStrategy(
 ));
 
 
-app.get('/', (req, res)=>{res.render('index')})
-app.get('/login', (req, res)=>{res.render('login')})
-app.get('/board', (req, res)=>{db.query('SELECT * FROM topic',
-  (err, results) =>	{var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
-		db.query(sql, [10, 0], (err, results) =>{res.render('board',{results});
+app.get('/portfolio', (req, res)=>{
+  res.render('portfolio_index')
+})
+
+app.get('/', (req, res)=>{
+	res.render('index', {
+		loginStat:template.LOGIN(req, res)
+	})
+})
+
+app.get('/board', (req, res)=>{
+	db.query('SELECT * FROM topic',	(err, results)=>{
+		var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
+		db.query(sql, [10, 0], (err, results)=>{
+			res.render('board',{
+				loginStat:template.LOGIN(req, res),
+				results
+			});
 		});
 	});
 });
-app.get('/template/create', (req, res)=>{
+
+app.get('/create', (req, res)=>{
 	res.render('create',{
-		user: req.user
-	})})
-
-
-
-
-
-app.get('/create', function (req, res) {
-  if(!template.ISOWNER(req, res)){
-    res.redirect('/login')
-  } else { 
-    var title = '글쓰기';
-    var login = template.LOGIN(req, res)
-    var html = template.HTML(title, '',`
-        <form class="form" method="post" action="/create_process">
-          <input type="hidden" name="user_id" value='${req.user}'>
-          <input class="title" type="text" name="title" placeholder="title">
-          <textarea id="summernote" name="description"></textarea>
-          <script>
-              $(document).ready(function() {
-                  $('#summernote').summernote({
-                  lang: 'ko-KR' // default: 'en-US'
-                  });
-              });
-          </script>                     
-          <p><input type="submit" value="마감"></p>  
-        </form>
-    `,'',login); 
-    res.send(html);}
+		user: req.user,
+		loginStat:template.LOGIN(req, res)
+	})
 })
 
-app.get('/page/:pageId', function (req, res) {
-  var sql = `SELECT topic.id, title, description, nickname FROM topic LEFT JOIN users ON topic.user_id = users.id WHERE topic.id=?`;
-  db.query(sql,[req.params.pageId],function (err, results) {
-      if(err){
-          throw err;
-      }
-      var title = results[0].title;
-      var login = template.LOGIN(req, res)
-      var description = results[0].description;
-      var html = template.HTML(title, `${results[0].nickname}`, `
-      <form class="form" method="post" action="/create_process">
-          <input class="title" type="text" name="title" placeholder="title" value="${title}">
-          <textarea id="summernote" name="description">${description}</textarea>
-          <script>
-              $(document).ready(function() {
-                  $('#summernote').summernote({
-                  lang: 'ko-KR' // default: 'en-US'
-                  });
-              });
-          </script>                      
-      </form>
-      <a href="/update/${req.params.pageId}">update</a>
-      `,
-        ` 
-      <p>
-      <form method="post" action="/delete_process">
-      <input type="hidden" name="id" value="${req.params.pageId}">
-      <input type="submit" value="delete">
-      </form>`
-      ,login); 
-          res.send(html);        
-  });
-});
-
-app.get('/update/:updateId', function (req, res) {
-  if(!template.ISOWNER(req, res)){
-    res.redirect('/login')
-  } else {
-    db.query(`SELECT * FROM topic WHERE id=?`,[req.params.updateId],function (err, results) {
-      if(err){
-          throw err;
-      }
-      var title = results[0].title;
-      var login = template.LOGIN(req, res)
-      var description = results[0].description;
-      var html = template.HTML(title, '', `
-        <form class="form" method="post" action="/update_process">
-            <input type="hidden" name="id" value="${results[0].id}"> 
-            <input class="title" type="text" name="title" placeholder="title" value="${title}">
-            <textarea id="summernote" name="description">${description}</textarea>
-            <script>
-                $(document).ready(function() {
-                    $('#summernote').summernote({
-                    lang: 'ko-KR' // default: 'en-US'
-                    });
-                });
-            </script>                     
-            <p><input type="submit" value="마감"></p>  
-        </form>
-        `,`
-        <p>
-        <form method="post" action="/delete_process">
-            <input type="hidden" name="id" value="${results[0].id}">
-            <input type="submit" value="delete">
-        </form>
-        </p>`,login); 
-      res.send(html);
-    });
-  }
-});
-
-
-
-app.post('/create', (req, res)=>{
-	console.log(req.body);
-  var sql = `INSERT INTO topic (title, description, created, user_id) VALUES(?, ?, NOW(), ?)`
-  db.query(sql, [req.body.title, req.body.description, req.body.user_id], (err, results)=>{res.redirect('/board');});
+app.get('/page/:pageId', (req, res)=>{
+	var sql = `SELECT topic.id, title, description, nickname, topic.user_id FROM topic LEFT JOIN users ON topic.user_id = users.id WHERE topic.id=?`;
+	db.query(sql, [req.params.pageId], (err, results)=>{
+		res.render('page',{
+			loginStat:template.LOGIN(req, res),
+			results
+		})
+	})
 })
 
-app.post('/update_process', function (req, res,) {
-  var post = req.body;
-  db.query(`UPDATE topic SET title=?, description=? WHERE id=?`, [post.title, post.description, post.id],function(err, results){
-      if(err){
-          throw err;
-      }     
-      res.redirect(`/board/1`);
-  });
-});
-
-app.post('/delete_process', function (req, res) {
-  if(!template.ISOWNER(req, res)){
-    res.redirect('/login')
-  } else {
-    var post = req.body;
-    db.query(`DELETE FROM topic WHERE id = ?`, [post.id], function (err, results) {
-        if(err){
-            throw err;
-        }
-        res.redirect('/board/1')
-    })
-  }
+app.get('/update/:updateId', (req, res)=>{
+	db.query(`SELECT * FROM topic WHERE id=?`, [req.params.updateId], (err, results)=>{
+		res.render('update', {
+			user: req.user,
+      loginStat:template.LOGIN(req, res),
+			results
+		})
+	})
 })
 
-app.post('/login',
-    passport.authenticate('local', { successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: true })
-);
+app.get('/login', (req, res)=>{
+	res.render('login', {
+		loginStat:template.LOGIN(req, res)
+	})
+})
 
 app.get('/logout', (req, res) =>{
   req.logOut();
-  req.session.save(function () {
-    res.redirect('/');
+  req.session.save(()=>{res.redirect('/')})
+})
+
+app.get('/resist', (req, res)=>{
+  res.render('resist',{
+    user: req.user,
+    loginStat:template.LOGIN(req, res)
   })
 })
 
-app.get('/login/resister', function(req, res){
-    var title = '회원가입';
-    var login = template.LOGIN(req, res);
-    var html = template.HTML(title,`
-    <form action="/login/resister" method="post">
-        <div>
-            <label for="username">Username</label>
-            <input name="username" type="text" autocomplete="username" required />
-        </div>
-        <div>
-            <label for="current-password">Password</label>
-            <input name="password" type="password" autocomplete="current-password" required />
-        </div>
-        <div>
-            <label for="nickname">nickname</label>
-            <input name="nickname" type="text" autocomplete="nickname" required />
-        </div>
-        <div>
-            <button type="submit">Sign in</button>
-        </div>
-    </form>`,'','',login);
-    res.send(html);
+app.post('/create', (req, res)=>{
+  var sql = `INSERT INTO topic (title, description, created, user_id) VALUES(?, ?, NOW(), ?)`
+  db.query(sql, [req.body.title, req.body.description, req.body.user_id], (err, results)=>{res.redirect(`/board`);});
+})
+
+app.post('/update', (req, res,)=>{
+  db.query(`UPDATE topic SET title=?, description=? WHERE id=?`, [req.body.title, req.body.description, req.body.id], (err, results)=>{
+      if(err){throw err;}     
+      res.redirect(`/board`);
+  });
 });
 
+app.post('/delete', (req, res)=>{
+    db.query(`DELETE FROM topic WHERE id = ?`, [req.body.id], (err, results)=>{
+      if(err){throw err;}
+      res.redirect('/board')
+    })
+  }
+)
 
-app.post('/login/resister', (req, res) =>{
-    var post = req.body;
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(post.password, salt, function(err, hash) {
-        db.query(`INSERT INTO users (username, password, nickname, created) VALUES (?, ?, ?, NOW())`,[post.username, hash, post.nickname], function (err, results) {
-          var user = post;
-          if(err){   
+app.post('/login',
+	passport.authenticate('local', 
+		{successRedirect: '/',
+		failureRedirect: '/login',
+		failureFlash: true 
+	})
+);
+
+app.post('/resist', (req, res)=>{
+  bcrypt.genSalt(saltRounds, (err, salt)=>{
+    bcrypt.hash(req.body.password, salt, (err, hash)=>{
+      var sql= `INSERT INTO users (username, password, nickname, created) VALUES (?, ?, ?, NOW())`; 
+      db.query(sql,[req.body.username, hash, req.body.nickname], (err, results)=>{
+        var sql= `SELECT * FROM users WHERE username=?`;
+        db.query(sql, [req.body.username], (err, results)=>{
+          if(err){
             res.sendStatus(500);
-          } else{
-            req.login(user, function (err) {
-              req.session.save(function () {
-                res.redirect('/');
-                })
-              })
+          } else {
+            var user= results[0];
+            req.login(user, (err)=>{
+              req.session.save(()=>{res.redirect('/');})
+            })          
           }
         })
       });     
     });
+  })
 });
 
-  
+app.use((req, res, next)=>{res.status(404).send('Sorry cant find that!');});
 
-
-
-
-// app.get('/login', loginRouter);
-// app.post('/login', loginRouter);
-// app.get('/login/resister', loginRouter);
-// app.post('/login/resister', loginRouter);
-// app.get('/logout', loginRouter)
-// app.get('*', indexRouter);
-// app.post('*', pagesRouter);
-
-
-app.use(function(req, res, next) {
-  res.status(404).send('Sorry cant find that!');
-});
-
-
-
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next)=>{
   console.error(err.stack)
   res.status(500).send('Something broke!')
 });
 
-app.listen(port, () => {
+app.listen(port, ()=>{
   console.log(`Example app listening at http://localhost:${port}`)
 })

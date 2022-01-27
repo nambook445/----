@@ -7,11 +7,12 @@ block style
 	script(src='https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js')
 
 block content
-	form.form(method='post' action='/create').text-dark
+	form.form(method='post' action='/update').text-dark
 		input(type='hidden' name='user_id' value=user)
-		input.title(type='text' name='title' placeholder='title' required='')
-		textarea#summernote(name='description')
-		button.w-100.btn.btn-lg.btn-primary(type='submit') 마감
+		input(type='hidden' name='id' value=`${results[0].id}`)
+		input.title(type='text' name='title' value=`${results[0].title}` placeholder=`${results[0].title}` required='')
+		textarea#summernote(name='description') #{results[0].description}
+		button.w-100.btn.btn-lg.btn-primary(type='submit') 수정
 	script.
 		$(document).ready(function() {
 				$('#summernote').summernote();

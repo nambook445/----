@@ -12,7 +12,8 @@ block content
       -for(i=0;i<results.length;i++)
         tr
           th(scope='row') #{results[i].id}
-          td #{results[i].title}
+          td
+            a(href=`/page/${results[i].id}`) #{results[i].title}
           td #{results[i].nickname}
           td #{results[i].created}
   .container

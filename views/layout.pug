@@ -29,7 +29,7 @@ html.h-100(lang='en')
 						a.nav-link.active(aria-current='page' href='/') Home
 						a.nav-link(href='/board') Board
 						a.nav-link(href='/create') Create
-						a.nav-link(href='/login') Login
+						!=loginStat
 			main.px-3
 				h1 Cover your page.
 				p.lead
@@ -45,4 +45,3 @@ html.h-100(lang='en')
 					| , by 
 					a.text-white(href='https://twitter.com/mdo') @mdo
 					| .
-			block js

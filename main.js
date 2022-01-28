@@ -38,7 +38,7 @@ passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
 passport.deserializeUser(function(id, done) {
-  db.query(`SELECT * FROM users WHERE username=?`,[id], function (err, results) {
+  db.query(`SELECT * FROM users WHERE username=?`,[id], (err, results)=>{
     if(err){
       done(null, false)
     } else {
@@ -48,8 +48,8 @@ passport.deserializeUser(function(id, done) {
 });
 
 passport.use(new LocalStrategy(
-  function(username, password, done) {
-    db.query(`SELECT * FROM users WHERE username =?`, [username], function (err, results) {
+  (username, password, done)=>{
+    db.query(`SELECT * FROM users WHERE username =?`, [username], (err, results)=>{
       var user = results[0];
      if(!user){
        return done(null, false, { message: '아이디를 찾을 수 없습니다.' })
@@ -62,6 +62,10 @@ passport.use(new LocalStrategy(
   }
 ));
 
+
+app.get('/fetch', (req, res)=>{
+  res.render('fetch')
+})
 
 app.get('/portfolio', (req, res)=>{
   res.render('portfolio_index')
@@ -132,19 +136,23 @@ app.get('/resist', (req, res)=>{
 
 app.post('/create', (req, res)=>{
   var sql = `INSERT INTO topic (title, description, created, user_id) VALUES(?, ?, NOW(), ?)`
-  db.query(sql, [req.body.title, req.body.description, req.body.user_id], (err, results)=>{res.redirect(`/board`);});
+  db.query(sql, [req.body.title, req.body.description, req.body.user_id], (err, results)=>{
+    res.redirect(`/board`);});
 })
+
 
 app.post('/update', (req, res,)=>{
   db.query(`UPDATE topic SET title=?, description=? WHERE id=?`, [req.body.title, req.body.description, req.body.id], (err, results)=>{
-      if(err){throw err;}     
+      if(err){
+        throw err;}     
       res.redirect(`/board`);
   });
 });
 
 app.post('/delete', (req, res)=>{
     db.query(`DELETE FROM topic WHERE id = ?`, [req.body.id], (err, results)=>{
-      if(err){throw err;}
+      if(err){
+        throw err;}
       res.redirect('/board')
     })
   }
@@ -179,7 +187,8 @@ app.post('/resist', (req, res)=>{
   })
 });
 
-app.use((req, res, next)=>{res.status(404).send('Sorry cant find that!');});
+app.use((req, res, next)=>{
+  res.status(404).send('Sorry cant find that!');});
 
 app.use((err, req, res, next)=>{
   console.error(err.stack)

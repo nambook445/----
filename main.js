@@ -63,9 +63,7 @@ passport.use(new LocalStrategy(
 ));
 
 
-app.get('/fetch', (req, res)=>{
-  res.render('fetch')
-})
+app.get('/fetch', (req, res)=>res.render('fetch'))
 
 app.get('/portfolio', (req, res)=>{
   res.render('portfolio_index')
@@ -77,16 +75,34 @@ app.get('/', (req, res)=>{
 	})
 })
 
-app.get('/board', (req, res)=>{
-	db.query('SELECT * FROM topic',	(err, results)=>{
-		var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id  ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
-		db.query(sql, [10, 0], (err, results)=>{
-			res.render('board',{
-				loginStat:template.LOGIN(req, res),
-				results
-			});
-		});
-	});
+app.get('/board/:pageId', (req, res)=>{
+  if(isNaN(req.params.pageId)||req.params.pageId<=0){
+    res.redirect('/board/1');
+  } 
+  // }if(req.params.pageId>totalPage){
+  //   res.redirect(`/board/${totalPage}`)
+  // } 모듈화 이후에 고치면 될듯
+    db.query('SELECT * FROM topic',	(err, results)=>{
+      var currentPage = parseInt(req.params.pageId);
+      var limit = 10;
+      var offset = (currentPage-1)*limit;
+      var totalPosts = results.length
+      var totalPage = Math.ceil(totalPosts/limit);
+      var pageLimit = 5;
+      var gap = currentPage%pageLimit===0 ? pageLimit-1 : currentPage%pageLimit-1;
+      var startPage = currentPage-gap;
+      var endPage = startPage+pageLimit-1;
+      var sql = `SELECT topic.id, topic.title, DATE_FORMAT(topic.created, '%Y-%m-%d') AS created, users.nickname FROM topic LEFT JOIN users ON topic.user_id = users.id ORDER BY topic.id DESC LIMIT ? OFFSET ?`;
+      db.query(sql, [limit, offset], (err, results)=>{
+        res.render('board', {
+          loginStat:template.LOGIN(req, res),
+          results,
+          startPage,
+          endPage,
+          totalPage
+        });
+      });
+    });
 });
 
 app.get('/create', (req, res)=>{
